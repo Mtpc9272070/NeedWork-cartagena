@@ -2,13 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 import asyncio
-from telegram import Bot, Update
-from telegram.ext import Application, CommandHandler
 
-# Configuración del bot de Telegram
-TOKEN = "7956778513:AAGI_CsE6zo11JKS24JCjEEZyQnwxFQloDk"
-CHAT_ID = "7585704054"
-bot = Bot(token=TOKEN)
+
+
 
 # Variables de seguimiento
 estadisticas = {
@@ -16,13 +12,6 @@ estadisticas = {
     "actualizaciones": 0,
     "ultima_actualizacion": "No disponible"
 }
-
-# Función para enviar mensajes a Telegram
-async def enviar_mensaje(texto):
-    try:
-        await bot.send_message(chat_id=CHAT_ID, text=texto)
-    except Exception as e:
-        logging.error(f"Error enviando mensaje a Telegram: {e}")
 
 # Función para obtener ofertas de empleo
 def obtener_ofertas():
@@ -95,15 +84,10 @@ async def tarea_programada():
     if nuevas_ofertas:
         actualizar_html(nuevas_ofertas)
         mensaje = f"✅ Nueva actualización con {estadisticas['total_ofertas']} ofertas"
-        await enviar_mensaje(mensaje)
+        await (mensaje)
     else:
         print("⚠️ No se encontraron nuevas ofertas.")
 
-async def enviar_mensaje(texto):
-    try:
-        await bot.send_message(chat_id=CHAT_ID, text=texto)
-    except Exception as e:
-        logging.error(f"Error enviando mensaje a Telegram: {e}")
 
 async def actualizar_periodicamente():
     while True:
@@ -233,12 +217,3 @@ def actualizar_html(ofertas):
     with open("index.html", "w", encoding="utf-8") as file:
         file.write(contenido_html)
 
-    print(f"✅ HTML actualizado con {len(ofertas)} ofertas.")
-# Configuración del bot de Telegram
-app = Application.builder().token(TOKEN).build()
-
-# Usamos `lambda` para ejecutar la tarea asíncrona correctamente
-app.add_handler(CommandHandler("actualizar", lambda update, context: asyncio.create_task(tarea_programada())))
-
-print("🚀 Bot en ejecución...")
-app.run_polling()
